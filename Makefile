@@ -2,36 +2,23 @@
 ##
 
 PACKAGE=vnc2flv
+PREFIX=/usr/local
 
+SVN=svn
 PYTHON=python
-GIT=git
 RM=rm -f
 CP=cp -f
+LN=ln -fs
 
 all:
 
 install:
-	$(PYTHON) setup.py install --home=$(HOME)
+	$(PYTHON) setup.py install --prefix=$(PREFIX)
 
 clean:
 	-$(PYTHON) setup.py clean
-	-$(RM) -r build dist MANIFEST
-	-cd $(PACKAGE) && $(MAKE) clean
-
-distclean: clean
-
-pack: distclean MANIFEST
-	$(PYTHON) setup.py sdist
-register: distclean MANIFEST
-	$(PYTHON) setup.py sdist upload register
-MANIFEST:
-	$(GIT) ls-tree --name-only -r HEAD > MANIFEST
-
-WEBDIR=$$HOME/Site/unixuser.org/python/$(PACKAGE)
-publish:
-	$(CP) docs/*.html $(WEBDIR)/
-
-# for testing
+	-$(RM) $(PACKAGE)/*.pyc 
+	-$(RM) -r build dist
 
 debug:
 	x11vnc -quiet -localhost -viewonly -nopw -bg
@@ -45,3 +32,14 @@ recmp3:
 testflvscreen:
 	$(PYTHON) setup.py build
 	PYTHONPATH=build/lib.linux-i686-2.5 $(PYTHON) flvscreen/test.py
+
+# Maintainance:
+commit: clean
+	$(SVN) commit
+
+register: clean
+	$(PYTHON) setup.py sdist upload register
+
+WEBDIR=$$HOME/Site/unixuser.org/python/$(PACKAGE)
+publish:
+	$(CP) docs/*.html $(WEBDIR)/

@@ -152,6 +152,8 @@ class RFBProxy(object):
         if server_security == 0:
             return self.autherr()
         elif server_security == 1:
+	    # send: always shared.
+	    self.send('\x01');
             return self.start()
         else:
             return self.crauth()
